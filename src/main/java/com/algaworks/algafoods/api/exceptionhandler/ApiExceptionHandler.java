@@ -105,8 +105,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 	
 	@ExceptionHandler(NegocioException.class)//é um método que trata captura todas as excessões da EntidadeNaoEncontrada
 	public ResponseEntity<?> handleNegocioException(
-			EntidadeNaoEncontradaException e, WebRequest request){
-		
+			NegocioException e, WebRequest request){
+	
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		ProblemType problemType = ProblemType.ERRO_NEGOCIO;
 		String detail = e.getMessage();
@@ -261,7 +261,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 	
 	@ExceptionHandler(Exception.class)
 	private ResponseEntity<?>handleUncaught (Exception e, WebRequest request) {
-		
 		ProblemType problemType = ProblemType.ERRO_DE_SISTEMA;
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		String detail = MSG_ERRO_USUARIO_FINAL;

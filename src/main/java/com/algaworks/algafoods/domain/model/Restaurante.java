@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -90,6 +92,10 @@ public class Restaurante {
 	@Embedded //Estou buscando algo embarcado
 	private Endereco endereco;
 	
+	private Boolean ativo = Boolean.TRUE;
+	
+	private Boolean aberto = Boolean.TRUE;
+	
 	//@JsonIgnore
 	@CreationTimestamp
 	@Column(nullable = false)
@@ -105,7 +111,17 @@ public class Restaurante {
 	@JoinTable(name = "restaurante_forma_pagamento",
 	joinColumns = @JoinColumn (name = "restaurante_id"),
 	inverseJoinColumns = @JoinColumn (name = "forma_pagamento_id"))
-	private List<FormaPagamento> formaPagamento=new ArrayList<>();
+	private Set<FormaPagamento> formaPagamento=new HashSet<>();
+	//Foi modificado para Set e em Assembler para Collection pois assim é possível incluir a mesma chave, 
+	//sem precisar ficar dando erro de constraint já que a chave já está inclusa
+	
+	@JsonIgnore
+	@ManyToMany
+	@JoinTable(name = "restaurante_usuario_responsavel",
+	joinColumns = @JoinColumn(name="restaurante_id"),
+	inverseJoinColumns = @JoinColumn (name = "usuario_id"))
+	private Set<Usuario> usuariosResponsaveis=new HashSet<>();
+	
 	
 	@JsonIgnore
 	@OneToMany (mappedBy="restaurante")
@@ -113,7 +129,46 @@ public class Restaurante {
 	
 //	@OneToMany(mappedBy = "restaurante")
 //	private List<Pedido> pedidos = new ArrayList<>();
-//	
+
+	public void ativar() {
+		setAtivo(true);
+	}
+	
+	public void inativar() {
+		setAtivo(false);
+	}
+	
+	public void abrir() {
+		setAberto(true);
+	}
+	
+	public void fechar() {
+		setAberto(false);
+	}
+	
+	public boolean removeFormaPagamento (FormaPagamento formaPagamentoInput) {
+		return formaPagamento.remove(formaPagamentoInput);
+	}
+	
+	public boolean adicionaFormaPagamento (FormaPagamento formaPagamentoInput) {
+		return formaPagamento.add(formaPagamentoInput);
+	}
+	
+	public boolean adicionaResponsavel (Usuario usuario) {
+		return getUsuariosResponsaveis().add(usuario);
+	}
+	
+	public boolean removeResponsavel (Usuario usuario) {
+		return getUsuariosResponsaveis().remove(usuario);
+	}
+	
+	public boolean aceitaFormaPagamento (FormaPagamento formaPagamento) {
+		return this.getFormaPagamento().contains(formaPagamento);
+	}
+	
+	public boolean naoAceitaFormaPagamento (FormaPagamento formaPagamento) {
+		return !aceitaFormaPagamento(formaPagamento);
+	}
 	
 	
 }

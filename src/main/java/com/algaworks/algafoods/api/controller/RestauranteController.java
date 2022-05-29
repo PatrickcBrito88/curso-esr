@@ -38,6 +38,7 @@ import com.algaworks.algafoods.api.model.RestauranteModel;
 import com.algaworks.algafoods.api.model.input.RestauranteInput;
 import com.algaworks.algafoods.core.validation.Groups;
 import com.algaworks.algafoods.core.validation.ValidacaoException;
+import com.algaworks.algafoods.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafoods.domain.exception.CozinhaNaoEncontradaException;
 import com.algaworks.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algaworks.algafoods.domain.exception.EntidadeNaoEncontradaException;
@@ -88,15 +89,13 @@ public class RestauranteController {
 			@RequestBody @Valid RestauranteInput restauranteInput) {
 		try {
 			Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
-			
-			restauranteModelDisassemler.copyToDomainObject(restauranteInput, restauranteAtual);
-			
+			restauranteModelDisassemler.copyToDomainObject(restauranteInput, restauranteAtual);		
 //			BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento",
 //					"endereco", "dataCadastro", "produtos");
 //			
 			return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restauranteAtual));			
 			
-		} catch (CozinhaNaoEncontradaException e) {
+		} catch (CozinhaNaoEncontradaException | CidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage(),e);
 		}
 	}
@@ -113,6 +112,50 @@ public class RestauranteController {
 		RestauranteModel restauranteModel=restauranteModelAssembler.toModel(restaurante);
 		
 		return restauranteModel;
+	}
+	
+	@PutMapping("/{restauranteId}/ativo")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void ativar (@PathVariable Long restauranteId) {
+		cadastroRestaurante.ativar(restauranteId);
+	}
+	
+	@DeleteMapping("/{restauranteId}/ativo")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void inativar (@PathVariable Long restauranteId) {
+		cadastroRestaurante.inativar(restauranteId);
+	}
+	
+	@PutMapping("/{restauranteId}/abertura")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void abrir (@PathVariable Long restauranteId) {
+		cadastroRestaurante.abrir(restauranteId);
+	}
+	
+	@PutMapping("/{restauranteId}/fechamento")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void fechar (@PathVariable Long restauranteId) {
+		cadastroRestaurante.fechar(restauranteId);
+	}
+	
+	@PutMapping("/ativacoes")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void ativacoes (@RequestBody List<Long>restauranteIds) {
+	try {
+		cadastroRestaurante.ativar(restauranteIds);
+	} catch (EntidadeNaoEncontradaException e) {
+		throw new NegocioException(e.getMessage(), e);
+	}
+	}
+	
+	@DeleteMapping("/ativacoes")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void desativacoes (@RequestBody List<Long>restauranteIds) {
+	try {
+		cadastroRestaurante.inativar(restauranteIds);
+	} catch (EntidadeNaoEncontradaException e) {
+		throw new NegocioException(e.getMessage(), e);
+	}
 	}
 
 //	@PatchMapping("/{restauranteId}")

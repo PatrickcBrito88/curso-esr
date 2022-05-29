@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.algaworks.algafoods.api.model.input.RestauranteInput;
+import com.algaworks.algafoods.domain.model.Cidade;
 import com.algaworks.algafoods.domain.model.Cozinha;
 import com.algaworks.algafoods.domain.model.Restaurante;
 
@@ -27,7 +28,9 @@ public class RestauranteModelDisassembler {
 		 * Gatilho para quando for alterar o id da Cozinha na atualização de restaurante
 		 */
 		restaurante.setCozinha(new Cozinha());
-		
+		if (restaurante.getEndereco() != null) {
+			restaurante.getEndereco().setCidade(new Cidade());
+		}
 		modelMapper.map(restauranteInput, restaurante);
 	}
 	

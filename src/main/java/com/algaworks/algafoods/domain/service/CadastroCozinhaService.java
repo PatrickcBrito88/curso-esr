@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.algaworks.algafoods.domain.exception.CidadeNaoEncontradaException;
@@ -28,24 +29,9 @@ public class CadastroCozinhaService {
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
 	
-	
+	@Transactional
 	public Cozinha salvar (Cozinha cozinha) {
 		return cozinhaRepository.save(cozinha);
-	}
-	
-	@Transactional
-	public Cozinha buscar (Long id) {
-		Optional<Cozinha> cozinha = cozinhaRepository.findById(id);
-		
-		if (cozinha.isEmpty()) {
-			throw new CozinhaNaoEncontradaException(id);
-		} 
-		return cozinha.get();// tem que usar o get por causa do Optional		
-	}
-	
-	public Cozinha buscarOuFalhar (Long cozinhaId) {
-		return cozinhaRepository.findById(cozinhaId)
-				.orElseThrow(() -> new CozinhaNaoEncontradaException(cozinhaId));
 	}
 	
 	@Transactional
@@ -56,32 +42,53 @@ public class CadastroCozinhaService {
 			cozinhaRepository.flush();//Força a execução pelo JPA por causa do @transactional que colocamos lá em cima
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_COZINHA_EM_USO,cozinhaId));
+		} catch (EmptyResultDataAccessException e) {
+			throw new CozinhaNaoEncontradaException(cozinhaId);
 		}
 		
 	}
 	
-	
-	
-	public Cozinha atualizar2 (Cozinha cozinha, Long cozinhaId) {
-		Optional<Cozinha> cozinhaAtual = cozinhaRepository.findById(cozinhaId);
-		
-		if (cozinhaAtual.isEmpty()) {
-			throw new CidadeNaoEncontradaException(cozinhaId);
-			
-		}
-		BeanUtils.copyProperties(cozinha, cozinhaAtual.get(),"id");
-		Cozinha cozinhaSalva = cozinhaRepository.save(cozinhaAtual.get());
-		return cozinhaSalva;
-				
+	public Cozinha buscarOuFalhar (Long cozinhaId) {
+		return cozinhaRepository.findById(cozinhaId)
+				.orElseThrow(() -> new CozinhaNaoEncontradaException(cozinhaId));
 	}
 	
-	public Cozinha atualizar (Cozinha cozinha, Long cozinhaId) {
-		Cozinha cozinhaAtual = buscarOuFalhar(cozinhaId);
-		BeanUtils.copyProperties(cozinha, cozinhaAtual,"id");
-		return salvar(cozinhaAtual);
-	}
-	
-	public List<Cozinha> listar() {
-		return cozinhaRepository.findAll();
-	}
+//	@Transactional
+//	public Cozinha buscar (Long id) {
+//		Optional<Cozinha> cozinha = cozinhaRepository.findById(id);
+//		
+//		if (cozinha.isEmpty()) {
+//			throw new CozinhaNaoEncontradaException(id);
+//		} 
+//		return cozinha.get();// tem que usar o get por causa do Optional		
+//	}
+//	
+//	
+//	
+//	
+//	
+//	
+//	
+//	public Cozinha atualizar2 (Cozinha cozinha, Long cozinhaId) {
+//		Optional<Cozinha> cozinhaAtual = cozinhaRepository.findById(cozinhaId);
+//		
+//		if (cozinhaAtual.isEmpty()) {
+//			throw new CidadeNaoEncontradaException(cozinhaId);
+//			
+//		}
+//		BeanUtils.copyProperties(cozinha, cozinhaAtual.get(),"id");
+//		Cozinha cozinhaSalva = cozinhaRepository.save(cozinhaAtual.get());
+//		return cozinhaSalva;
+//				
+//	}
+//	
+//	public Cozinha atualizar (Cozinha cozinha, Long cozinhaId) {
+//		Cozinha cozinhaAtual = buscarOuFalhar(cozinhaId);
+//		BeanUtils.copyProperties(cozinha, cozinhaAtual,"id");
+//		return salvar(cozinhaAtual);
+//	}
+//	
+//	public List<Cozinha> listar() {
+//		return cozinhaRepository.findAll();
+//	}
 }

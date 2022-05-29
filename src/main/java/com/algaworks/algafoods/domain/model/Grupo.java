@@ -1,7 +1,9 @@
 package com.algaworks.algafoods.domain.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+
+import com.algaworks.algafoods.api.model.input.PermissaoInput;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,6 +28,7 @@ public class Grupo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	
 	@Column(nullable = false)
 	private String nome;
 	
@@ -31,6 +36,14 @@ public class Grupo {
 	@JoinTable(name = "grupo_permissao", 
 	joinColumns = @JoinColumn (name="grupo_id"),
 	inverseJoinColumns=@JoinColumn (name="permissao_id"))
-	private List<Permissao> permissoes = new ArrayList<>();
+	private Set<Permissao> permissoes = new HashSet<>();
+	
+	public boolean adicionarPermissao(Permissao permissao) {
+		return getPermissoes().add(permissao);
+	}
+	
+	public boolean removerPermissao (Permissao permissao) {
+		return getPermissoes().remove(permissao);
+	}
 
 }

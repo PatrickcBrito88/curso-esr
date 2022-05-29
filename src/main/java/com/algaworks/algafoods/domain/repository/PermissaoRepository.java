@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.algaworks.algafoods.domain.model.Permissao;
 
 @Repository
-public interface PermissaoRepository extends JpaRepository<Permissao, Long>{
+public interface PermissaoRepository extends CustomJpaRepository<Permissao, Long>{
 
 	
 }

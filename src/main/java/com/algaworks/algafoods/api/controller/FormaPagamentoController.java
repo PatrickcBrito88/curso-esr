@@ -3,6 +3,8 @@ package com.algaworks.algafoods.api.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafoods.api.assembler.FormaPagamentoAssembler;
+import com.algaworks.algafoods.api.assembler.FormaPagamentoDisassembler;
+import com.algaworks.algafoods.api.model.FormaPagamentoModel;
+import com.algaworks.algafoods.api.model.input.FormaPagamentoInput;
 import com.algaworks.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algaworks.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafoods.domain.model.FormaPagamento;
@@ -26,54 +33,57 @@ import com.algaworks.algafoods.domain.service.CadastroFormaPagamentoService;
 public class FormaPagamentoController {
 
 	@Autowired
-	CadastroFormaPagamentoService cadastroFormaPagamento;
-
-	@PostMapping
-	public ResponseEntity<?> salvar(@RequestBody FormaPagamento formaPagamento) {
-		formaPagamento = cadastroFormaPagamento.salvar(formaPagamento);
-		return ResponseEntity.status(HttpStatus.OK).body(formaPagamento);
-	}
-
+	private FormaPagamentoRepository formaPagamentoRepository;
+	
+	@Autowired
+	private CadastroFormaPagamentoService cadastroFormaPagamento;
+	
+	@Autowired
+	private FormaPagamentoAssembler formaPagamentoModelAssembler;
+	
+	@Autowired
+	private FormaPagamentoDisassembler formaPagamentoInputDisassembler;
+	
 	@GetMapping
-	public ResponseEntity<?> listar() {
-		try {
-			List<FormaPagamento> lista = cadastroFormaPagamento.listar();
-			return ResponseEntity.status(HttpStatus.OK).body(lista);
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+	public List<FormaPagamentoModel> listar() {
+		List<FormaPagamento> todasFormasPagamentos = formaPagamentoRepository.findAll();
+		
+		return formaPagamentoModelAssembler.toCollectModel(todasFormasPagamentos);
 	}
-
-	@GetMapping("{id}")
-	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
-		try {
-			FormaPagamento formaPagamento = cadastroFormaPagamento.buscar(id);
-			return ResponseEntity.status(HttpStatus.OK).body(formaPagamento);
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+	
+	@GetMapping("/{formaPagamentoId}")
+	public FormaPagamentoModel buscar(@PathVariable Long formaPagamentoId) {
+		FormaPagamento formaPagamento = cadastroFormaPagamento.buscarOuFalhar(formaPagamentoId);
+		
+		return formaPagamentoModelAssembler.toModel(formaPagamento);
 	}
-
-	@PutMapping("{id}")
-	public ResponseEntity<?> atualiza(@PathVariable("id") Long id, @RequestBody FormaPagamento formaPagamento) {
-		try {
-			formaPagamento = cadastroFormaPagamento.atualizar(id, formaPagamento);
-			return ResponseEntity.status(HttpStatus.OK).body(formaPagamento);
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+	
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public FormaPagamentoModel adicionar(@RequestBody @Valid FormaPagamentoInput formaPagamentoInput) {
+		FormaPagamento formaPagamento = formaPagamentoInputDisassembler.toObjectModel(formaPagamentoInput);
+		
+		formaPagamento = cadastroFormaPagamento.salvar(formaPagamento);
+		
+		return formaPagamentoModelAssembler.toModel(formaPagamento);
 	}
-
-	@DeleteMapping("{id}")
-	public ResponseEntity<?> remove(@PathVariable("id") Long id) {
-		try {
-			cadastroFormaPagamento.apagar(id);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		} catch (EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
+	
+	@PutMapping("/{formaPagamentoId}")
+	public FormaPagamentoModel atualizar(@PathVariable Long formaPagamentoId,
+			@RequestBody @Valid FormaPagamentoInput formaPagamentoInput) {
+		FormaPagamento formaPagamentoAtual = cadastroFormaPagamento.buscarOuFalhar(formaPagamentoId);
+		
+		formaPagamentoInputDisassembler.copyToObject(formaPagamentoInput, formaPagamentoAtual);
+		
+		formaPagamentoAtual = cadastroFormaPagamento.salvar(formaPagamentoAtual);
+		
+		return formaPagamentoModelAssembler.toModel(formaPagamentoAtual);
+	}
+	
+	@DeleteMapping("/{formaPagamentoId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void remover(@PathVariable Long formaPagamentoId) {
+		cadastroFormaPagamento.excluir(formaPagamentoId);	
 	}
 
 }

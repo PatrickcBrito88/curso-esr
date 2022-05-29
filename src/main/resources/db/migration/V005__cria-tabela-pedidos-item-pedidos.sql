@@ -5,7 +5,7 @@ primary key (id)) engine=InnoDB;
 create table pedido (id bigint not null auto_increment, data_cancelamento datetime(6), data_confirmacao datetime(6), 
 data_criacao datetime(6) not null, data_entrega datetime(6), endereco_bairro varchar(255) not null,
  endereco_cep varchar(255) not null, endereco_complemento varchar(255), endereco_logradouro varchar(255) not null, 
- endereco_numero varchar(255) not null, status integer, subtotal decimal(19,2) not null, taxa_frete decimal(19,2) not null, 
+ endereco_numero varchar(255) not null, status varchar(10) not null, subtotal decimal(19,2) not null, taxa_frete decimal(19,2) not null, 
  valor_total decimal(19,2) not null, usuario_cliente_id bigint not null, endereco_cidade_id bigint not null, 
  forma_pagamento_id bigint not null, restaurante_id bigint not null, primary key (id)) engine=InnoDB;
  

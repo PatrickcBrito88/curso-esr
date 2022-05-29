@@ -9,7 +9,7 @@ import com.algaworks.algafoods.domain.model.Cidade;
 import com.algaworks.algafoods.domain.model.Estado;
 
 @Repository
-public interface CidadeRepository extends JpaRepository<Cidade, Long>{
+public interface CidadeRepository extends CustomJpaRepository<Cidade, Long>{
 	
 	
 
