@@ -8,6 +8,10 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,8 +57,24 @@ public class CozinhaController {
 		
 	
 	@GetMapping(produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)//Significa que esse método produz algo
-	public List<CozinhaModel> listar(){
-		return cozinhaModelAssembler.toCollectModel(cozinhaRepository.findAll());
+	public Page<CozinhaModel> listar(@PageableDefault (size=1) Pageable pageable){//Para paginar a consulta
+		//PageableDefault define o tamanho da paginação
+		
+		Page<Cozinha> cozinhasPage = cozinhaRepository.findAll(pageable);//Para paginar a consulta
+		//QUando colocamos o Page no retorno lá em cima (public Page<cozinhaModel>) teremos um quantitativo de 
+		//páginas disponíveis na paginação
+		
+		/* 
+		 * Lá no postman. Coloca size para determinar o tamanho da paginaçao (quantos resultados por página?)
+		 *  e page para determinar qual página iremos (começando na zero)
+		 * querer trazer no resultado
+		 * Para ordenar basta colocar sort e no value coloca o campo que quer ordenar (nome, desc, etc) 
+		 */
+		List<CozinhaModel> cozinhasModel = cozinhaModelAssembler
+				.toCollectModel(cozinhasPage.getContent());//Para paginar a resposta
+		 Page<CozinhaModel> cozinhasModelPage = new PageImpl<>(cozinhasModel, pageable, 
+				cozinhasPage.getTotalElements());//Para pegar o total de páginas
+		 return cozinhasModelPage;
 	}
 	
 	//@ResponseStatus(HttpStatus.CREATED)//Define o código de status de retorno - Forma mais manual=,,,,,,

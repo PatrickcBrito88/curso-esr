@@ -11,10 +11,12 @@ import com.algaworks.algafoods.domain.model.ItemPedido;
 import com.algaworks.algafoods.domain.model.Restaurante;
 import com.algaworks.algafoods.domain.model.StatusPedido;
 import com.algaworks.algafoods.domain.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonFilter;
 
 import lombok.Getter;
 import lombok.Setter;
 
+//@JsonFilter("pedidoFilter") //Vai filtrar as propriedades que estão aqui a partir do filtro indicado - Verificar no controler
 @Getter
 @Setter
 public class PedidoResumoModel {
@@ -26,7 +28,8 @@ public class PedidoResumoModel {
 	private String status;
 	private OffsetDateTime dataCriacao;
 	private RestauranteResumoModel restaurante;
-	private UsuarioModel cliente;
+	//private UsuarioModel cliente;
+	private String nomeCliente;
 	
 	
 	

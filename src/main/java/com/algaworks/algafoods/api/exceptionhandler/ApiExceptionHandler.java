@@ -13,9 +13,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -67,6 +69,23 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 				.collect(Collectors.joining("."));
 	}
 	
+	/*Como essa chamada de HttpMediaTypeNotAcceptable não pode ser representada pelo ProblemType (uma vez que 
+	 * o accept no postman é uma image, então temos que sobrescrever o método original passando o responseStatus 
+	 * correto
+	 */
+	@Override
+	protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		return ResponseEntity.status(status).headers(headers).build();
+	}
+	
+	
+//	protected ResponseEntity<Object> handleMediaTypeNotAcceptable(
+//			HttpMediaTypeNotAcceptableException e, HttpHeaders headers, HttpStatus status, WebRequest request){
+//		return ResponseEntity.status(status).headers(headers).build();	
+//		
+//	}
+	
 	@ExceptionHandler(EntidadeEmUsoException.class)
 	public ResponseEntity<?> handleEntidadeEmUsoException(
 			EntidadeEmUsoException e, WebRequest request){
@@ -83,6 +102,48 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 		return handleExceptionInternal(e, problem, new HttpHeaders(),
 				status, request);		
 		
+	}
+	
+	@Override
+	protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status,
+			WebRequest request) {
+		
+		return handleValidationInternal(ex, ex.getBindingResult(), headers, status, request);
+	}
+	
+	private ResponseEntity<Object> handleValidationInternal(Exception ex, BindingResult bindingResult, HttpHeaders headers,
+			HttpStatus status, WebRequest request){
+		ProblemType problemType = ProblemType.DADOS_INVALIDOS;
+		status = HttpStatus.BAD_REQUEST;
+		String detail = MSG_DADOS_INVALIDOS;
+		
+			
+		//Criando uma lista de fields com problema
+		//Estava usando Field Erro que pegava apenas erro de propriedade (getFieldErros()
+		List<Problem.Object> problemObjects = bindingResult.getAllErrors().stream()
+				.map(objectError -> {
+					String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());//Pega a mensagem do messageproperties
+					
+					String name=objectError.getObjectName();
+					
+					//Se for classe é objecterror, se for propriedade é fieldError
+					if (objectError instanceof FieldError) {
+						name = ((FieldError) objectError).getField();
+					}
+					
+					return Problem.Object.builder()
+						.name(name)
+						.userMessage(message)
+						.build();
+				})
+				.collect(Collectors.toList());
+		
+		Problem problem = createProblemBuilder(status, problemType, detail)
+				.userMessage(MSG_DADOS_INVALIDOS)
+				.objects(problemObjects)
+				.build();
+		
+		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);	
 	}
 	
 	@ExceptionHandler(EntidadeNaoEncontradaException.class)//é um método que trata captura todas as excessões da EntidadeNaoEncontrada
@@ -271,41 +332,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 				.build();	
 		
 		return handleExceptionInternal(e, problem, new HttpHeaders(), status, request);	
-	}
-	
-	private ResponseEntity<Object> handleValidationInternal(Exception ex, BindingResult bindingResult, HttpHeaders headers,
-			HttpStatus status, WebRequest request){
-		ProblemType problemType = ProblemType.DADOS_INVALIDOS;
-		status = HttpStatus.BAD_REQUEST;
-		String detail = MSG_DADOS_INVALIDOS;
-		
-			
-		//Criando uma lista de fields com problema
-		//Estava usando Field Erro que pegava apenas erro de propriedade (getFieldErros()
-		List<Problem.Object> problemObjects = bindingResult.getAllErrors().stream()
-				.map(objectError -> {
-					String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());//Pega a mensagem do messageproperties
-					
-					String name=objectError.getObjectName();
-					
-					//Se for classe é objecterror, se for propriedade é fieldError
-					if (objectError instanceof FieldError) {
-						name = ((FieldError) objectError).getField();
-					}
-					
-					return Problem.Object.builder()
-						.name(name)
-						.userMessage(message)
-						.build();
-				})
-				.collect(Collectors.toList());
-		
-		Problem problem = createProblemBuilder(status, problemType, detail)
-				.userMessage(MSG_DADOS_INVALIDOS)
-				.objects(problemObjects)
-				.build();
-		
-		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);	
 	}
 	
 	@Override
