@@ -21,6 +21,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -53,10 +54,20 @@ import com.algaworks.algafoods.domain.service.CadastroRestauranteService;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.net.HttpHeaders;
 
+//@CrossOrigin(maxAge=20)//(maxAge=10)//(origins = "http://www.algafood.local:8000")//(origins = "http://www.algafood.local:8000")
+//Podemos habilitar o Cors de forma global para não precisar ficar habilitando método por método ou classe por classe
 @RestController
-@RequestMapping("/restaurante")
+@RequestMapping("/restaurantes")
 public class RestauranteController {
+	
+	/*
+	 * Preflight é uma chamada de verificação.
+	 * Os browsers enviam uma requisição para o servidor para saber quais tipos de requisição os servidores aceitam.
+	 * "Estou prestes a te mandar uma requisição. Você me permite ?"
+	 * O navegador faz um Options para verificar
+	 */
 
 	@Autowired
 	private CadastroRestauranteService cadastroRestaurante;
@@ -138,13 +149,18 @@ public class RestauranteController {
 	 //Modelos de filtro
 	@GetMapping()
 	@JsonView(RestauranteView.Resumo.class)
-	public List<RestauranteModel> listar() {
-		return restauranteModelAssembler.toCollectModel(restauranteRepository.findAll());
+	public ResponseEntity<List<RestauranteModel>> listar() {
+		return ResponseEntity.ok()
+				//.header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*") //Essa é a ação manual, mas também pode fazer pelo Spring adiconando a anotação @CrossOrigin. Pode ser na função ou no controlador inteiro
+				//Para o navegador permitir o chamamento de URLS cruzadas (http://www.algafood.local:8000), por exemplo (api.algafood.local) (aula 16.3)
+				//Ou então coloca o * que "libera geral"
+				.body(restauranteModelAssembler.toCollectModel(restauranteRepository.findAll()));
+				
 	}
 	
 	@GetMapping(params = "projecao=apenas-nome")
 	@JsonView(RestauranteView.ApenasNome.class)// Marco qual filtro será utilizado de acordo com o que foi marcado na Model
-	public List<RestauranteModel> listarApenasNome() {
+	public ResponseEntity<List<RestauranteModel>> listarApenasNome() {
 		return listar();
 	}
 

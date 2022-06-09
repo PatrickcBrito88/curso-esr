@@ -31,6 +31,8 @@ import com.algaworks.algafoods.domain.model.Produto;
 import com.algaworks.algafoods.domain.service.CadastroProdutoService;
 import com.algaworks.algafoods.domain.service.CatalogoFotoProdutoService;
 import com.algaworks.algafoods.domain.service.FotoStorageService;
+import com.algaworks.algafoods.domain.service.FotoStorageService.FotoRecuperada;
+import com.google.common.net.HttpHeaders;
 
 @RestController
 @RequestMapping("/restaurantes/{restauranteId}/produtos/{produtoId}/foto")
@@ -77,7 +79,7 @@ public class RestauranteProdutoFotoController {
 	
 	//Metodo que traz a foto
 	@GetMapping
-	public ResponseEntity<InputStreamResource> servirFoto (@PathVariable Long restauranteId, 
+	public ResponseEntity<?> servirFoto (@PathVariable Long restauranteId, 
 			@PathVariable Long produtoId, @RequestHeader (name = "accept") String acceptHeader) throws HttpMediaTypeNotAcceptableException {
 		
 		//@RequesHeader - Pega o valor que o consumidor coloca no Header
@@ -94,11 +96,28 @@ public class RestauranteProdutoFotoController {
 			verificarCompatbilidadeMediaType(mediaTypeFoto, mediaTypesAceitas);
 			
 			
-			InputStream inputStream = fotoStorageService.recuperar(fotoProduto.getNomeArquivo());
+			FotoRecuperada fotoRecuperada = fotoStorageService.recuperar(fotoProduto.getNomeArquivo());
 			
-			return ResponseEntity.ok()
+			if (fotoRecuperada.temInputStream()) {
+			/*
+			 * Este método retorna tanto para armazenamento local quanto para nuvem.
+			 * Se for local ele retorna um InputStream.
+			 * Se for nuvem retorna uma URL pelo Headers
+			 */				
+				//Armazenamento Local
+
+				
+				return ResponseEntity.ok()
 					.contentType(mediaTypeFoto)//Retorna no cabeçalho o content type exato do arquivo que está armazenado
-					.body(new InputStreamResource(inputStream));
+					.body(new InputStreamResource(fotoRecuperada.getInputStream()));
+			} else {
+				//Nuvem
+				
+				return ResponseEntity.status(HttpStatus.FOUND)
+						.header(HttpHeaders.LOCATION, fotoRecuperada.getUrl())
+						.build();
+						
+			}
 		} catch (EntidadeNaoEncontradaException e) {
 			return ResponseEntity.notFound().build();//Se deixar sem esse try catch dá erro 406 ou 500
 			//pois esse MediaType não aceita Json (do buscar ou falhar)

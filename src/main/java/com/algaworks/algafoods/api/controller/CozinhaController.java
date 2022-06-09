@@ -57,7 +57,7 @@ public class CozinhaController {
 		
 	
 	@GetMapping(produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)//Significa que esse método produz algo
-	public Page<CozinhaModel> listar(@PageableDefault (size=1) Pageable pageable){//Para paginar a consulta
+	public Page<CozinhaModel> listar(@PageableDefault (size=4) Pageable pageable){//Para paginar a consulta
 		//PageableDefault define o tamanho da paginação
 		
 		Page<Cozinha> cozinhasPage = cozinhaRepository.findAll(pageable);//Para paginar a consulta

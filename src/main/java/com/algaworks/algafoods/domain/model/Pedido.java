@@ -26,7 +26,10 @@ import javax.persistence.PrePersist;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
+import com.algaworks.algafoods.domain.events.PedidoCanceladoEvent;
+import com.algaworks.algafoods.domain.events.PedidoConfirmadoEvent;
 import com.algaworks.algafoods.domain.exception.NegocioException;
 
 import lombok.Data;
@@ -34,8 +37,8 @@ import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Pedido {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class Pedido extends AbstractAggregateRoot<Pedido>{//Extender abstractAggregatteRoot para ouvir os eventos
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -96,11 +99,15 @@ public class Pedido {
 	public void confirmar() {
 		setStatus(StatusPedido.CONFIRMADO);
 		setDataConfirmacao(OffsetDateTime.now());
+		
+		registerEvent(new PedidoConfirmadoEvent(this));//Instancia a classe que representa o evento. This significa que está mandando este pedido como parametro
 	}
 	
 	public void cancelar() {
 		setStatus(StatusPedido.CANCELADO);
 		setDataCancelamento(OffsetDateTime.now());
+		
+		registerEvent(new PedidoCanceladoEvent(this));
 	}
 	
 	public void entregar() {
