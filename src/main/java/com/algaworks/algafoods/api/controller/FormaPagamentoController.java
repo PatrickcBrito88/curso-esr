@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import com.algaworks.algafoods.api.assembler.FormaPagamentoAssembler;
 import com.algaworks.algafoods.api.assembler.FormaPagamentoDisassembler;
 import com.algaworks.algafoods.api.model.FormaPagamentoModel;
 import com.algaworks.algafoods.api.model.input.FormaPagamentoInput;
+import com.algaworks.algafoods.api.openapi.controller.FormasPagamentoControlerOpenApi;
 import com.algaworks.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algaworks.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafoods.domain.model.FormaPagamento;
@@ -34,8 +36,8 @@ import com.algaworks.algafoods.domain.repository.FormaPagamentoRepository;
 import com.algaworks.algafoods.domain.service.CadastroFormaPagamentoService;
 
 @RestController
-@RequestMapping("/formapagamento")
-public class FormaPagamentoController {
+@RequestMapping(path="/formapagamento", produces = MediaType.APPLICATION_JSON_VALUE)
+public class FormaPagamentoController implements FormasPagamentoControlerOpenApi{
 
 	@Autowired
 	private FormaPagamentoRepository formaPagamentoRepository;

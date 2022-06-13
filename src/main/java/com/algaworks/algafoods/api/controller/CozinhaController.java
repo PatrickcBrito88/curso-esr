@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,8 @@ import com.algaworks.algafoods.api.assembler.CozinhaModelAssembler;
 import com.algaworks.algafoods.api.assembler.CozinhaModelDisassembler;
 import com.algaworks.algafoods.api.model.CozinhaModel;
 import com.algaworks.algafoods.api.model.input.CozinhaInput;
+import com.algaworks.algafoods.api.openapi.controller.CozinhaControlerOpenApi;
+import com.algaworks.algafoods.api.openapi.model.CozinhasModelOpenApi;
 import com.algaworks.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algaworks.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafoods.domain.model.Cozinha;
@@ -39,8 +42,8 @@ import com.algaworks.algafoods.domain.service.CadastroCozinhaService;
 //@ResponseBody //Indica que a resposta dos métodos devem ir para a resposta HTTP
 @RestController //Substitui o @Controller e o @ResponseBody
 //@RequestMapping (value="cozinhas", produces = MediaType.APPLICATION_JSON_VALUE) -- Aplica na classe inteira
-@RequestMapping("/cozinhas")
-public class CozinhaController {
+@RequestMapping(path="/cozinhas", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CozinhaController implements CozinhaControlerOpenApi{
 	
 	
 	@Autowired
@@ -54,10 +57,14 @@ public class CozinhaController {
 	
 	@Autowired
 	private CozinhaModelDisassembler cozinhaModelDisassembler;
-		
+	
 	
 	@GetMapping(produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)//Significa que esse método produz algo
 	public Page<CozinhaModel> listar(@PageableDefault (size=4) Pageable pageable){//Para paginar a consulta
+		//Exemplo de Logging
+		
+		
+		
 		//PageableDefault define o tamanho da paginação
 		
 		Page<Cozinha> cozinhasPage = cozinhaRepository.findAll(pageable);//Para paginar a consulta

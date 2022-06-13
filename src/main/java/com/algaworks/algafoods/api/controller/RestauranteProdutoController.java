@@ -8,9 +8,11 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +23,7 @@ import com.algaworks.algafoods.api.assembler.ProdutoModelAssembler;
 import com.algaworks.algafoods.api.assembler.ProdutoModelDisassembler;
 import com.algaworks.algafoods.api.model.ProdutoModel;
 import com.algaworks.algafoods.api.model.input.ProdutoInput;
+import com.algaworks.algafoods.api.openapi.controller.ProdutoControlerOpenApi;
 import com.algaworks.algafoods.domain.model.Produto;
 import com.algaworks.algafoods.domain.model.Restaurante;
 import com.algaworks.algafoods.domain.repository.ProdutoRepository;
@@ -28,8 +31,8 @@ import com.algaworks.algafoods.domain.service.CadastroProdutoService;
 import com.algaworks.algafoods.domain.service.CadastroRestauranteService;
 
 @RestController
-@RequestMapping("/restaurante/{restauranteId}/produtos")
-public class RestauranteProdutoController {
+@RequestMapping(path="/restaurante/{restauranteId}/produtos", produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteProdutoController implements ProdutoControlerOpenApi{
 
 	@Autowired
 	private ProdutoModelAssembler produtoModelAssembler;
@@ -77,11 +80,25 @@ public class RestauranteProdutoController {
 
 	@GetMapping("/{produtoId}")
 	@ResponseStatus(HttpStatus.OK)
-	public ProdutoModel listarPorProduto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
+	public ProdutoModel buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
 		cadastroProduto.buscarOuFalhar(produtoId, restauranteId);
 		Produto produto = cadastroProduto.buscarOuFalhar(produtoId, restauranteId);
 		return produtoModelAssembler.toModel(produto);
+	}
+	
+	
+	
+	@PutMapping("/{produtoId}")
+	public ProdutoModel atualizar(@PathVariable Long restauranteId, @PathVariable Long produtoId,
+			@RequestBody @Valid ProdutoInput produtoInput) {
+		Produto produtoAtual = cadastroProduto.buscarOuFalhar(restauranteId, produtoId);
+		
+		produtoModelDisassembler.copyToObject(produtoInput, produtoAtual);
+		
+		produtoAtual = cadastroProduto.salvar(produtoAtual);
+		
+		return produtoModelAssembler.toModel(produtoAtual);
 	}
 
 }

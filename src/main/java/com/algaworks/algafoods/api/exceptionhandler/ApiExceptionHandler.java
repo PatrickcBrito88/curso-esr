@@ -1,6 +1,7 @@
 package com.algaworks.algafoods.api.exceptionhandler;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,9 @@ import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @ControllerAdvice //Faz com que capture excessões em todo o projeto
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 	
@@ -59,7 +63,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 				.type(problemType.getUri())
 				.title(problemType.getTitle())
 				.detail(detail)
-				.timestamp(LocalDateTime.now());
+				.timestamp(OffsetDateTime.now());
 	}
 	
 	//Concatenar o caminho do erro com . (ponto)
@@ -191,14 +195,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 				.title(status.getReasonPhrase())//Pequena descrição que descreve o status que está vindo
 				.status(status.value())
 				.userMessage(MSG_ERRO_USUARIO_FINAL)
-				.timestamp(LocalDateTime.now())
+				.timestamp(OffsetDateTime.now())
 				.build();
 		} else if (body instanceof String) {
 			body = Problem.builder()
 					.title((String)body)
 					.status(status.value())
 					.userMessage(MSG_ERRO_USUARIO_FINAL)
-					.timestamp(LocalDateTime.now())
+					.timestamp(OffsetDateTime.now())
 					.build();
 		}
 		
@@ -326,6 +330,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		String detail = MSG_ERRO_USUARIO_FINAL;
 		e.printStackTrace();
+		log.error(e.getMessage(),e);
 		
 		Problem problem = createProblemBuilder(status, problemType, detail)
 				.userMessage(MSG_ERRO_USUARIO_FINAL)

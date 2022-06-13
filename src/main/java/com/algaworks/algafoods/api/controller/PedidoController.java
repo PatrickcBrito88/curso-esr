@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import com.algaworks.algafoods.api.assembler.PedidoResumoModelAssembler;
 import com.algaworks.algafoods.api.model.PedidoModel;
 import com.algaworks.algafoods.api.model.PedidoResumoModel;
 import com.algaworks.algafoods.api.model.input.PedidoInput;
+import com.algaworks.algafoods.api.openapi.controller.PedidoControlerOpenApi;
 import com.algaworks.algafoods.core.data.PageableTranslator;
 import com.algaworks.algafoods.domain.model.Pedido;
 import com.algaworks.algafoods.domain.model.Usuario;
@@ -39,9 +41,12 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.google.common.collect.ImmutableMap;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+
 @RestController
-@RequestMapping("/pedidos")
-public class PedidoController {
+@RequestMapping(path="/pedidos", produces=MediaType.APPLICATION_JSON_VALUE)
+public class PedidoController implements PedidoControlerOpenApi{
 	
 	@Autowired
 	private PedidoModelAssembler pedidoModelAssembler;
@@ -82,7 +87,11 @@ public class PedidoController {
 //		return pedidosWrapper;
 //	}
 	
-	
+	//Explicação lá na classe do SpringFoxConfig
+		@ApiImplicitParams({
+			@ApiImplicitParam(value="Nomes das propriedades para filtrar na resposta, separados por vírgula",
+					name="campos", paramType="query", type="string")
+		})
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	public Page<PedidoResumoModel> pesquisar (@PageableDefault(size=10) Pageable pageable, PedidoFilter pedidoFilter){
@@ -101,6 +110,11 @@ public class PedidoController {
 		//Para o findAll funcionar com Specification, tem que acrescentar o extends de JPASpecificationExecutor lá no repositório
 	}
 	
+	//Explicação lá na classe do SpringFoxConfig
+	@ApiImplicitParams({
+		@ApiImplicitParam(value="Nomes das propriedades para filtrar na resposta, separados por vírgula",
+				name="campos", paramType="query", type="string")
+	})
 	@GetMapping("/{codigoPedido}")
 	@ResponseStatus(HttpStatus.OK)
 	public PedidoModel buscar (@PathVariable String codigoPedido) {

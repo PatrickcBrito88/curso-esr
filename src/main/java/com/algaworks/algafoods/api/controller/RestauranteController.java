@@ -1,4 +1,4 @@
-package com.algaworks.algafoods.api.controller;
+					package com.algaworks.algafoods.api.controller;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -40,6 +41,8 @@ import com.algaworks.algafoods.api.model.CozinhaModel;
 import com.algaworks.algafoods.api.model.RestauranteModel;
 import com.algaworks.algafoods.api.model.input.RestauranteInput;
 import com.algaworks.algafoods.api.model.view.RestauranteView;
+import com.algaworks.algafoods.api.openapi.controller.RestauranteControlerOpenApi;
+import com.algaworks.algafoods.api.openapi.model.RestauranteBasicoOpenApi;
 import com.algaworks.algafoods.core.validation.Groups;
 import com.algaworks.algafoods.core.validation.ValidacaoException;
 import com.algaworks.algafoods.domain.exception.CidadeNaoEncontradaException;
@@ -56,11 +59,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HttpHeaders;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
 //@CrossOrigin(maxAge=20)//(maxAge=10)//(origins = "http://www.algafood.local:8000")//(origins = "http://www.algafood.local:8000")
 //Podemos habilitar o Cors de forma global para não precisar ficar habilitando método por método ou classe por classe
 @RestController
-@RequestMapping("/restaurantes")
-public class RestauranteController {
+@RequestMapping(value = "/restaurantes", produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteController implements RestauranteControlerOpenApi{
 	
 	/*
 	 * Preflight é uma chamada de verificação.
@@ -146,21 +153,25 @@ public class RestauranteController {
 //
 //	}
 
+	
 	 //Modelos de filtro
 	@GetMapping()
 	@JsonView(RestauranteView.Resumo.class)
-	public ResponseEntity<List<RestauranteModel>> listar() {
-		return ResponseEntity.ok()
+	public List<RestauranteModel> listar() {
+//		return ResponseEntity.ok()
 				//.header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*") //Essa é a ação manual, mas também pode fazer pelo Spring adiconando a anotação @CrossOrigin. Pode ser na função ou no controlador inteiro
 				//Para o navegador permitir o chamamento de URLS cruzadas (http://www.algafood.local:8000), por exemplo (api.algafood.local) (aula 16.3)
 				//Ou então coloca o * que "libera geral"
-				.body(restauranteModelAssembler.toCollectModel(restauranteRepository.findAll()));
+//				.body(restauranteModelAssembler.toCollectModel(restauranteRepository.findAll()));
+		return restauranteModelAssembler.toCollectModel(restauranteRepository.findAll());
 				
 	}
 	
+	
+	@ApiOperation(value = "Lista Restaurantes", hidden=true)//Hidden=true, significa que essa operação fica oculta pois vai aparecer a de cima
 	@GetMapping(params = "projecao=apenas-nome")
 	@JsonView(RestauranteView.ApenasNome.class)// Marco qual filtro será utilizado de acordo com o que foi marcado na Model
-	public ResponseEntity<List<RestauranteModel>> listarApenasNome() {
+	public List<RestauranteModel> listarApenasNome() {
 		return listar();
 	}
 

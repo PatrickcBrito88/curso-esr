@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,13 +21,17 @@ import com.algaworks.algafoods.api.assembler.GrupoModelAssembler;
 import com.algaworks.algafoods.api.assembler.GrupoModelDisassembler;
 import com.algaworks.algafoods.api.model.GrupoModel;
 import com.algaworks.algafoods.api.model.input.GrupoInput;
+import com.algaworks.algafoods.api.openapi.controller.GrupoControlerOpenApi;
 import com.algaworks.algafoods.domain.model.Grupo;
 import com.algaworks.algafoods.domain.repository.GrupoRepository;
 import com.algaworks.algafoods.domain.service.CadastroGrupoService;
 
+import io.swagger.annotations.Api;
+
+
 @RestController
-@RequestMapping("/grupos")
-public class GrupoController {
+@RequestMapping(path="/grupos", produces = MediaType.APPLICATION_JSON_VALUE) // Com o produces o Swagger escaneia e seta na documentação
+public class GrupoController implements GrupoControlerOpenApi {
 	
 	@Autowired
 	private GrupoRepository grupoRepository;

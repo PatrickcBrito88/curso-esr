@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,9 +20,11 @@ import lombok.Setter;
 @Setter
 public class UsuarioInput {
 	
+	@ApiModelProperty(value="Nome de um usuário", example="Pedro", required=true)
 	@NotBlank
 	private String nome;
 	
+	@ApiModelProperty(value="E-mail de um usuário", example="fulano@gmail.com", required=true)
 	@NotBlank
 	@Email
 	private String email;

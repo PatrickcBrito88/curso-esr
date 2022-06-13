@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import com.algaworks.algafoods.domain.repository.CustomJpaRepository;
 import com.algaworks.algafoods.infrastrucutre.repository.CustomJpaRepositoryImpl;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+
 @SpringBootApplication
 @EnableJpaRepositories(repositoryBaseClass = CustomJpaRepositoryImpl.class)
 public class AlgafoodsApplication {

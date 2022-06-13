@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,6 +27,7 @@ import com.algaworks.algafoods.api.assembler.CidadeModelDisassembler;
 import com.algaworks.algafoods.api.exceptionhandler.Problem;
 import com.algaworks.algafoods.api.model.CidadeModel;
 import com.algaworks.algafoods.api.model.input.CidadeInput;
+import com.algaworks.algafoods.api.openapi.controller.CidadeControlerOpenApi;
 import com.algaworks.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafoods.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.algafoods.domain.exception.NegocioException;
@@ -33,10 +35,17 @@ import com.algaworks.algafoods.domain.model.Cidade;
 import com.algaworks.algafoods.domain.repository.CidadeRepository;
 import com.algaworks.algafoods.domain.service.CadastroCidadeService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+
 
 @RestController
-@RequestMapping("/cidades")
-public class CidadeController {
+@RequestMapping(path="/cidades", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CidadeController implements CidadeControlerOpenApi {
 
 	@Autowired
 	private CadastroCidadeService cadastroCidade;
@@ -50,18 +59,19 @@ public class CidadeController {
 	@Autowired
 	private CidadeModelDisassembler cidadeModelDisassembler;
 	
-	
+	@ApiOperation("Lista cidades")
 	@GetMapping
 	public List<CidadeModel> listar() {
 		 return cidadeModelAssembler.toCollectModel(cidadeRepository.findAll());
 	}
 
+	
 	@GetMapping("/{cidadeId}")
-	public CidadeModel buscar(@PathVariable("cidadeId") Long id) {
+	public CidadeModel buscar(Long id) {
 		return cidadeModelAssembler.toModel(cadastroCidade.buscarOuFalhar(id));
 	}
 
-
+	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public CidadeModel salvar(@RequestBody @Valid CidadeInput cidadeInput) {
@@ -73,9 +83,9 @@ public class CidadeController {
 		}
 	}
 
+
 	@PutMapping("/{cidadeId}")
-	public CidadeModel atualizar(@PathVariable("cidadeId") Long id, 
-			@RequestBody @Valid CidadeInput cidadeInput) {
+	public CidadeModel atualizar(@PathVariable("cidadeId") Long id,	@RequestBody @Valid CidadeInput cidadeInput) {
 		
 			try {
 				Cidade cidadeAtual = cadastroCidade.buscarOuFalhar(id);
@@ -90,7 +100,7 @@ public class CidadeController {
 		
 	}
 
-	
+
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{cidadeId}")
 	public void remover(@PathVariable("cidadeId") Long id) {

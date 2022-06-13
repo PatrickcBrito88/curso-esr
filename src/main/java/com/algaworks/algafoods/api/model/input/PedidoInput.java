@@ -13,6 +13,7 @@ import lombok.Setter;
 @Setter
 public class PedidoInput {
 	
+	
 	@Valid
 	@NotNull
 	private RestauranteInputId restaurante;

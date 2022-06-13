@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -39,6 +40,8 @@ import com.algaworks.algafoods.api.model.CozinhaModel;
 import com.algaworks.algafoods.api.model.FormaPagamentoModel;
 import com.algaworks.algafoods.api.model.RestauranteModel;
 import com.algaworks.algafoods.api.model.input.RestauranteInput;
+import com.algaworks.algafoods.api.openapi.controller.FormasPagamentoControlerOpenApi;
+import com.algaworks.algafoods.api.openapi.controller.RestauranteFormasPagamentoControlerOpenApi;
 import com.algaworks.algafoods.core.validation.Groups;
 import com.algaworks.algafoods.core.validation.ValidacaoException;
 import com.algaworks.algafoods.domain.exception.CidadeNaoEncontradaException;
@@ -56,8 +59,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
-@RequestMapping("/restaurante/{restauranteId}/formas-pagamento")
-public class RestauranteFormaPagamentoController {
+@RequestMapping(path="/restaurante/{restauranteId}/formas-pagamento", produces=MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteFormaPagamentoController implements RestauranteFormasPagamentoControlerOpenApi{
 
 	@Autowired
 	private CadastroRestauranteService cadastroRestauranteService;

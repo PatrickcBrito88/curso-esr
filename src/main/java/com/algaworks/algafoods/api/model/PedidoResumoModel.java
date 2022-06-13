@@ -13,6 +13,7 @@ import com.algaworks.algafoods.domain.model.StatusPedido;
 import com.algaworks.algafoods.domain.model.Usuario;
 import com.fasterxml.jackson.annotation.JsonFilter;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,14 +22,28 @@ import lombok.Setter;
 @Setter
 public class PedidoResumoModel {
 
+	@ApiModelProperty(value="Código do pedido em UUID", example = "2CA263F1-5C94-11E0-84CC-002170FBAC5B")
 	private String codigo;
+	
+	@ApiModelProperty(value="Subtotal do pedido", example = "52.24")
 	private BigDecimal subtotal;
+	
+	@ApiModelProperty(value="Taxa de Frete", example = "10.00")
 	private BigDecimal taxaFrete;
+	
+	@ApiModelProperty(value="Valor Total do Pedido", example = "62.24")
 	private BigDecimal valorTotal;
+	
+	@ApiModelProperty(value="Status do Pedido", example = "Confirmado")
 	private String status;
+	
+	@ApiModelProperty(value="Data de Criação do pedido", example = "2022-12-25T00:00:00Z")
 	private OffsetDateTime dataCriacao;
+	
+	
 	private RestauranteResumoModel restaurante;
-	//private UsuarioModel cliente;
+	
+	@ApiModelProperty(value="Nome do Cliente", example = "Antônio")
 	private String nomeCliente;
 	
 	
