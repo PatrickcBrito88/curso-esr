@@ -1,5 +1,5 @@
 # Especialista Spring Rest - Algafoods API
-
+ 
 ### Resumo
 Esta API gerencia o cadastro de clientes, restaurantes e cozinhas, bem como a realização de pedidos com emissão de relatórios, informação sobre status e envio de e-mails.
 Cada restaurante pertence a uma única cozinha associada e vende produtos específicos.
