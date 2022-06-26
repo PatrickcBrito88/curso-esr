@@ -62,7 +62,6 @@ public class RestauranteProdutoFotoController  implements ProdutoFotoControlerOp
 		//@RequestPart (required=true) MultipartFile arquivo - Este argumento é uma maneira de passar o content type pela documentação
 		//Aula 18.36
 //		MultipartFile arquivo = fotoProdutoInput.getArquivo();
-
 		FotoProduto foto = new FotoProduto();
 		foto.setProduto(produto);
 		foto.setDescricao(fotoProdutoInput.getDescricao());
@@ -70,6 +69,7 @@ public class RestauranteProdutoFotoController  implements ProdutoFotoControlerOp
 		foto.setTamanho(arquivo.getSize());
 		foto.setNomeArquivo(arquivo.getOriginalFilename());
 
+		
 		FotoProduto fotoSalva = catalogoFotoProduto.salvar(foto, arquivo.getInputStream());
 
 		return fotoProdutoModelAssembler.toModel(fotoSalva);

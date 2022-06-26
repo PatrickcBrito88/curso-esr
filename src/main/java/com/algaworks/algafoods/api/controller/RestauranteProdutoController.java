@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafoods.api.AlgaLinks;
 import com.algaworks.algafoods.api.assembler.ProdutoModelAssembler;
 import com.algaworks.algafoods.api.assembler.ProdutoModelDisassembler;
 import com.algaworks.algafoods.api.model.ProdutoModel;
@@ -48,6 +50,9 @@ public class RestauranteProdutoController implements ProdutoControlerOpenApi{
 
 	@Autowired
 	private ProdutoRepository produtoRepository;
+	
+	@Autowired
+	private AlgaLinks algaLinks;
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
@@ -60,8 +65,8 @@ public class RestauranteProdutoController implements ProdutoControlerOpenApi{
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public List<ProdutoModel> listar(@PathVariable Long restauranteId,
-			@RequestParam(required = false) boolean incluirInativos) {
+	public CollectionModel<ProdutoModel> listar(@PathVariable Long restauranteId,
+			@RequestParam(required = false) Boolean incluirInativos) {
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
 		// Com o requestParam eu consigo parametrizar no post se eu quero incluir os
 		// inativos ou não
@@ -75,7 +80,8 @@ public class RestauranteProdutoController implements ProdutoControlerOpenApi{
 			lista = produtoRepository.findAtivosByRestaurante(restaurante);
 		}
 
-		return produtoModelAssembler.toCollectModel(lista);
+		return produtoModelAssembler.toCollectionModel(lista)
+				.add(algaLinks.linkToProdutos(restauranteId, "produtos."));
 	}
 
 	@GetMapping("/{produtoId}")

@@ -5,6 +5,9 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
+
 import com.algaworks.algafoods.domain.model.Endereco;
 import com.algaworks.algafoods.domain.model.FormaPagamento;
 import com.algaworks.algafoods.domain.model.ItemPedido;
@@ -18,9 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 //@JsonFilter("pedidoFilter") //Vai filtrar as propriedades que estão aqui a partir do filtro indicado - Verificar no controler
+@Relation(collectionRelation = "Pedidos Resumidos")
 @Getter
 @Setter
-public class PedidoResumoModel {
+public class PedidoResumoModel extends RepresentationModel<PedidoResumoModel>{
 
 	@ApiModelProperty(value="Código do pedido em UUID", example = "2CA263F1-5C94-11E0-84CC-002170FBAC5B")
 	private String codigo;
@@ -41,10 +45,10 @@ public class PedidoResumoModel {
 	private OffsetDateTime dataCriacao;
 	
 	
-	private RestauranteResumoModel restaurante;
+	private RestauranteApenasNomeModel restaurante;
 	
 	@ApiModelProperty(value="Nome do Cliente", example = "Antônio")
-	private String nomeCliente;
+	private UsuarioModel cliente;
 	
 	
 	

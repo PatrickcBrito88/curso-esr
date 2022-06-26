@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafoods.api.openapi.controller.EstatisticaControlerOpenApi;
 import com.algaworks.algafoods.domain.model.dto.VendaDiaria;
 import com.algaworks.algafoods.domain.model.filter.VendaDiariaFilter;
 import com.algaworks.algafoods.domain.service.VendaQueryService;
@@ -20,7 +21,7 @@ import com.algaworks.algafoods.domain.service.VendaReportService;
 
 @RestController
 @RequestMapping("/estatisticas")
-public class EstatisticasController {
+public class EstatisticasController implements EstatisticaControlerOpenApi{
 	
 	@Autowired
 	private VendaQueryService vendaQueryService;

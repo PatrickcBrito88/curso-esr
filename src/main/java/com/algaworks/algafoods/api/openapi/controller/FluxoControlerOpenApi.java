@@ -1,5 +1,7 @@
 package com.algaworks.algafoods.api.openapi.controller;
 
+import org.springframework.http.ResponseEntity;
+
 import com.algaworks.algafoods.api.exceptionhandler.Problem;
 
 import io.swagger.annotations.Api;
@@ -16,7 +18,7 @@ public interface FluxoControlerOpenApi {
 		@ApiResponse(code = 404, message = "Código não encontrado", response = Problem.class)
 	})
 	@ApiOperation("Confirmação do pedido")
-	public void confirmar (@ApiParam (value="Código do pedido em UUID", example= "2CA263F1-5C94-11E0-84CC-002170FBAC5B",
+	public ResponseEntity<Void> confirmar (@ApiParam (value="Código do pedido em UUID", example= "2CA263F1-5C94-11E0-84CC-002170FBAC5B",
 		required=true) String codigoPedido);
 	
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
@@ -24,7 +26,7 @@ public interface FluxoControlerOpenApi {
 		@ApiResponse(code = 404, message = "Código não encontrado", response = Problem.class)
 	})
 	@ApiOperation("Cancelamento do pedido")
-	public void cancelar (@ApiParam (value="Código do pedido em UUID", example= "2CA263F1-5C94-11E0-84CC-002170FBAC5B",
+	public ResponseEntity<Void> cancelar (@ApiParam (value="Código do pedido em UUID", example= "2CA263F1-5C94-11E0-84CC-002170FBAC5B",
 			required=true) String codigoPedido);	
 	
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
@@ -32,7 +34,7 @@ public interface FluxoControlerOpenApi {
 		@ApiResponse(code = 404, message = "Código não encontrado", response = Problem.class)
 	})
 	@ApiOperation("Entrega do pedido")
-	public void entregar (@ApiParam (value="Código do pedido em UUID", example= "2CA263F1-5C94-11E0-84CC-002170FBAC5B",
+	public ResponseEntity<Void> entregar (@ApiParam (value="Código do pedido em UUID", example= "2CA263F1-5C94-11E0-84CC-002170FBAC5B",
 			required=true) String codigoPedido);
 	
 }

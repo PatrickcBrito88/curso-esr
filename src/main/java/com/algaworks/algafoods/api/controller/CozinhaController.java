@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,13 +60,13 @@ public class CozinhaController implements CozinhaControlerOpenApi{
 	@Autowired
 	private CozinhaModelDisassembler cozinhaModelDisassembler;
 	
+	@Autowired
+	private PagedResourcesAssembler<Cozinha> pagedResourcesAssembler;
+	
 	
 	@GetMapping(produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)//Significa que esse método produz algo
-	public Page<CozinhaModel> listar(@PageableDefault (size=4) Pageable pageable){//Para paginar a consulta
-		//Exemplo de Logging
-		
-		
-		
+	public PagedModel<CozinhaModel> listar(@PageableDefault (size=4) Pageable pageable){//Para paginar a consulta
+				
 		//PageableDefault define o tamanho da paginação
 		
 		Page<Cozinha> cozinhasPage = cozinhaRepository.findAll(pageable);//Para paginar a consulta
@@ -77,11 +79,25 @@ public class CozinhaController implements CozinhaControlerOpenApi{
 		 * querer trazer no resultado
 		 * Para ordenar basta colocar sort e no value coloca o campo que quer ordenar (nome, desc, etc) 
 		 */
-		List<CozinhaModel> cozinhasModel = cozinhaModelAssembler
-				.toCollectModel(cozinhasPage.getContent());//Para paginar a resposta
-		 Page<CozinhaModel> cozinhasModelPage = new PageImpl<>(cozinhasModel, pageable, 
-				cozinhasPage.getTotalElements());//Para pegar o total de páginas
-		 return cozinhasModelPage;
+		
+		/*
+		 * O que estpa implementado embaixo era utilizado sem  Hateoas. Depois que passamos a 
+		 * utilizar o Hateoas chamamos um conversor de Page para PageModel e a implementação
+		 * fica mais simples. Basta fazer uma injeção de PagedResourcesAssembler
+		 * 
+		 * --------------- ATENÇÃO ---------------
+		 * Ao fazer isso eu não preciso mais do PageJsonSerializer que está no core/jackson
+		 * pois este pagedResourceAssembler já faz tudo que este Serializador faz
+		 */
+		
+		PagedModel<CozinhaModel> cozinhasPagedModel = pagedResourcesAssembler
+				.toModel(cozinhasPage, cozinhaModelAssembler);//eu passo um page normal e um conversor de model que é o assembler implementado com modelMapper
+				
+//		List<CozinhaModel> cozinhasModel = cozinhaModelAssembler
+//				.toCollectModel(cozinhasPage.getContent());//Para paginar a resposta
+//		 Page<CozinhaModel> cozinhasModelPage = new PageImpl<>(cozinhasModel, pageable, 
+//				cozinhasPage.getTotalElements());//Para pegar o total de páginas
+		 return cozinhasPagedModel;
 	}
 	
 	//@ResponseStatus(HttpStatus.CREATED)//Define o código de status de retorno - Forma mais manual=,,,,,,

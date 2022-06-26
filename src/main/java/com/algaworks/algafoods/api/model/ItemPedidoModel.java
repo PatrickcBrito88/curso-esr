@@ -2,16 +2,18 @@ package com.algaworks.algafoods.api.model;
 
 import java.math.BigDecimal;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ItemPedidoModel {
+public class ItemPedidoModel extends RepresentationModel<ItemPedidoModel>{
 
 	@ApiModelProperty(value="Id do Produto", example = "1")
-	private String produtoId;
+	private Long produtoId;
 	
 	@ApiModelProperty(value="Nome do produto", example = "Pernil Suíno")
 	private String produtoNome;

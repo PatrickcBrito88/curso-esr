@@ -1,4 +1,4 @@
-package com.algaworks.algafoods.core.openapi;
+package com.algaworks.algafoods.core.springfox;
 
 
 import java.io.File;
@@ -99,7 +99,8 @@ public class SpringFoxConfig implements WebMvcConfigurer{
 						new Tag("Estados", "Gerencia os Estados"),
 						new Tag("Fluxo de Pedidos", "Gerencia o Fluxo de Pedidos"),
 						new Tag("Produtos", "Gerencia os produtos"),
-						new Tag("Usuários", "Gerencia os usuários")
+						new Tag("Usuários", "Gerencia os usuários"),
+						new Tag("Estatística", "Gerencia as estatísticas")
 						);
 				
 		

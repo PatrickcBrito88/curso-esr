@@ -2,6 +2,7 @@ package com.algaworks.algafoods.api.openapi.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedModel;
 
 import com.algaworks.algafoods.api.exceptionhandler.Problem;
 import com.algaworks.algafoods.api.model.PedidoModel;
@@ -24,7 +25,7 @@ public interface PedidoControlerOpenApi {
 			@ApiImplicitParam(value = "Nomes das propriedades para filtrar na resposta, separados por vírgula", 
 					name = "campos", paramType = "query", type = "string") })
 	@ApiOperation("Pesquisar um pedido com filtro")
-	Page<PedidoResumoModel> pesquisar(Pageable pageable, PedidoFilter pedidoFilter);
+	PagedModel<PedidoResumoModel> pesquisar(Pageable pageable, PedidoFilter pedidoFilter);
 
 	
 	

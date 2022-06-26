@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,7 @@ import io.swagger.annotations.ApiResponses;
 public interface UsuariosControlerOpenApi {
 	
 	@ApiOperation("Listar todos os usuários")
-	List<UsuarioModel> listar();
+	CollectionModel<UsuarioModel> listar();
 	
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
 		@ApiResponse(code = 400, message = "Id do usuário inválido", response = Problem.class),

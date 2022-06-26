@@ -2,7 +2,12 @@ package com.algaworks.algafoods.api.openapi.controller;
 
 import java.util.List;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
+
 import com.algaworks.algafoods.api.exceptionhandler.Problem;
+import com.algaworks.algafoods.api.model.RestauranteApenasNomeModel;
+import com.algaworks.algafoods.api.model.RestauranteBasicoModel;
 import com.algaworks.algafoods.api.model.RestauranteModel;
 import com.algaworks.algafoods.api.model.input.RestauranteInput;
 import com.algaworks.algafoods.api.openapi.model.RestauranteBasicoOpenApi;
@@ -38,10 +43,11 @@ public interface RestauranteControlerOpenApi {
 			name = "projecao", paramType = "query", type = "string", required=false)//required=false - Não é obrigatório
 	})
 	@ApiOperation(value="Listar todos os restaurantes", response = RestauranteBasicoOpenApi.class) //Significa, na documentação, não usa o RestauranteModel mas sim o RestauranteBasicoOpenApi
-	List<RestauranteModel> listar();
+	CollectionModel<RestauranteBasicoModel> listar();
+	
 	
 	@ApiOperation(value = "Lista Restaurantes", hidden=true)//Hidden=true, significa que essa operação fica oculta pois vai aparecer a de cima
-	List<RestauranteModel> listarApenasNome();
+	CollectionModel<RestauranteApenasNomeModel> listarApenasNome();
 	
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class)
@@ -54,28 +60,28 @@ public interface RestauranteControlerOpenApi {
 		@ApiResponse(code = 204, message = "Restaurante ativado com sucesso", response = Problem.class)
 	})
 	@ApiOperation("Ativação de um restaurante por um ID")
-	void ativar(@ApiParam(example="1", required=true)Long restauranteId);
+	ResponseEntity<Void> ativar(@ApiParam(example="1", required=true)Long restauranteId);
 	
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 204, message = "Restaurante inativado com sucesso", response = Problem.class)
 	})
 	@ApiOperation("Inativação de um Restaurante por um ID")
-	void inativar(@ApiParam(example="1", required=true)Long restauranteId);
+	ResponseEntity<Void> inativar(@ApiParam(example="1", required=true)Long restauranteId);
 	
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 204, message = "Restaurante aberto com sucesso", response = Problem.class)
 	})
 	@ApiOperation("Abertura de um Restaurante por um ID")
-	void abrir(@ApiParam(example="1", required=true)Long restauranteId);
+	ResponseEntity<Void> abrir(@ApiParam(example="1", required=true)Long restauranteId);
 
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 204, message = "Restaurante fechado com sucesso", response = Problem.class)
 	})
 	@ApiOperation("Fechamento de um Restaurante por um ID")
-	void fechar(@ApiParam(example="1", required=true)Long restauranteId);
+	ResponseEntity<Void> fechar(@ApiParam(example="1", required=true)Long restauranteId);
 
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
 		@ApiResponse(code = 204, message = "Restaurantes ativados com sucesso", response = Problem.class)

@@ -130,6 +130,31 @@ public class Restaurante {
 //	@OneToMany(mappedBy = "restaurante")
 //	private List<Pedido> pedidos = new ArrayList<>();
 
+	public boolean podeAbrir() {
+		if ((this.aberto==false)&&(this.ativo==true)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean podeFechar() {
+		return !podeAbrir();
+	}
+	
+	public boolean podeAtivar() {
+		if (this.ativo==false) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean podeInativar() {
+		return !podeAtivar();
+	}
+	
+	
 	public void ativar() {
 		setAtivo(true);
 	}

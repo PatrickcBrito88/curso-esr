@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -30,6 +32,7 @@ import com.algaworks.algafoods.api.model.PedidoModel;
 import com.algaworks.algafoods.api.model.PedidoResumoModel;
 import com.algaworks.algafoods.api.model.input.PedidoInput;
 import com.algaworks.algafoods.api.openapi.controller.PedidoControlerOpenApi;
+import com.algaworks.algafoods.core.data.PageWrapper;
 import com.algaworks.algafoods.core.data.PageableTranslator;
 import com.algaworks.algafoods.domain.model.Pedido;
 import com.algaworks.algafoods.domain.model.Usuario;
@@ -62,6 +65,9 @@ public class PedidoController implements PedidoControlerOpenApi{
 	
 	@Autowired
 	private PedidoModelDisassembler pedidoModelDisassembler;
+	
+	@Autowired
+	private PagedResourcesAssembler<Pedido> pagedResourcesAssembler;
 
 							//Utilizando Filter
 //	@GetMapping
@@ -94,19 +100,28 @@ public class PedidoController implements PedidoControlerOpenApi{
 		})
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public Page<PedidoResumoModel> pesquisar (@PageableDefault(size=10) Pageable pageable, PedidoFilter pedidoFilter){
+	public PagedModel<PedidoResumoModel> pesquisar (@PageableDefault(size=10) Pageable pageable, PedidoFilter pedidoFilter){
 		//PedidoFilter especificado lá no Spec
-		pageable = traduzirPageable(pageable);
+		Pageable pageableTraduzido = traduzirPageable(pageable);
+		/*
+		 * Terá que criar um wrapper aqui tendo em vista que o pageable traduzido não está sendo passado 
+		 * quando do avanço para a próxima página.
+		 * QUando chamamos nomerestaurante o novo pageable com o hateoas não consegue 
+		 * mais traduzir o pageable. Aula 19.17
+		 * Tem que trazer o pageable original.
+		 * O wrapper ficou dentro de core/data
+		 */
 		
-		Page<Pedido> pedidosPage = pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter),pageable);
+		Page<Pedido> pedidosPage = pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter),pageableTraduzido);
 		
-		List<PedidoResumoModel> pedidosResumoModel = 
-				pedidoResumoModelAssembler.toCollectModel(pedidosPage.getContent());
+		//Aula 19.17
+		pedidosPage = new PageWrapper<>(pedidosPage, pageable);//NEsta linha eu repasso o pageable inicial
 		
-		Page<PedidoResumoModel> pedidosResumoModelPage = new PageImpl<>(pedidosResumoModel, pageable, pedidosPage.getTotalElements());
+		PagedModel<PedidoResumoModel> pagedModel = pagedResourcesAssembler
+				.toModel(pedidosPage, pedidoResumoModelAssembler);
 		
 		
-		return pedidosResumoModelPage;
+		return pagedModel;
 		//Para o findAll funcionar com Specification, tem que acrescentar o extends de JPASpecificationExecutor lá no repositório
 	}
 	

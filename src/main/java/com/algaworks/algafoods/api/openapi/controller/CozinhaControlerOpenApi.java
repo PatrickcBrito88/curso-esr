@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiResponses;
 public interface CozinhaControlerOpenApi {
 
 	@ApiOperation("Listar Cozinhas")
-	Page<CozinhaModel> listar(Pageable pageable);
+	PagedModel<CozinhaModel> listar(Pageable pageable);
 	
 	@ApiOperation("Listar Cozinhas por ID")
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros

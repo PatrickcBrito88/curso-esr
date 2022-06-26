@@ -1,9 +1,12 @@
 package com.algaworks.algafoods.api.model;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import com.algaworks.algafoods.api.model.view.RestauranteView;
-import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -11,21 +14,22 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RestauranteModel {
+@Relation(collectionRelation = "Restaurantes")
+public class RestauranteModel extends RepresentationModel<RestauranteModel>{
 	
 	@ApiModelProperty(example="1")
-	@JsonView({RestauranteView.Resumo.class, RestauranteView.ApenasNome.class})
+//	@JsonView({RestauranteView.Resumo.class, RestauranteView.ApenasNome.class})
 	private Long id;
 	
 	@ApiModelProperty(example="Bela Bel")
-	@JsonView({RestauranteView.Resumo.class, RestauranteView.ApenasNome.class})// Agora anota lá no controller
+//	@JsonView({RestauranteView.Resumo.class, RestauranteView.ApenasNome.class})// Agora anota lá no controller
 	private String nome;
 	
 	@ApiModelProperty(example="12.56")
-	@JsonView(RestauranteView.Resumo.class)
+//	@JsonView(RestauranteView.Resumo.class)
 	private BigDecimal precoFrete;
 	
-	@JsonView(RestauranteView.Resumo.class)
+//	@JsonView(RestauranteView.Resumo.class)
 	private CozinhaModel cozinha;
 	
 	@ApiModelProperty(example="true")
@@ -33,6 +37,11 @@ public class RestauranteModel {
 	
 	@ApiModelProperty(example="true")
 	private boolean aberto;
+	
 	private EnderecoModel endereco;
+	
+	private Set<FormaPagamentoModel> formaPagamento=new HashSet<>();
+	
+	private List<ProdutoModel> produtos;
 
 }

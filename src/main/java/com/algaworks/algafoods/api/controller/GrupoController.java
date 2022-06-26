@@ -47,9 +47,10 @@ public class GrupoController implements GrupoControlerOpenApi {
 	
 	@GetMapping
 	public List<GrupoModel> listar() {
-		List<Grupo> todosGrupos = grupoRepository.findAll();
+//		List<Grupo> todosGrupos = grupoRepository.findAll();
 		
-		return grupoModelAssembler.toCollectionModel(todosGrupos);
+//		return grupoModelAssembler.toCollectionModel(todosGrupos);
+		return null;
 	}
 	
 	@GetMapping("/{grupoId}")

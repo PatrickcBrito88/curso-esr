@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +47,8 @@ public class EstadoController implements EstadoControlerOpenApi{
 	private EstadoModelDisassembler estadoModelDisassembler;
 
 	@GetMapping
-	public List<EstadoModel> listar() {
-		return estadoModelAssembler.toCollectModel(estadoRepository.findAll());
+	public CollectionModel<EstadoModel> listar() {
+		return estadoModelAssembler.toCollectionModel(estadoRepository.findAll());
 	}
 
 	@GetMapping("/{estadoId}")

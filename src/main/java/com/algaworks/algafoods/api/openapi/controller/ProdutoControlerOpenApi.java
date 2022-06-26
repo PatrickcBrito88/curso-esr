@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,9 +37,10 @@ public interface ProdutoControlerOpenApi {
 		@ApiResponse(code = 400, message = "ID do restaurante inválido", response = Problem.class),
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class)
 	})
+	
 	@ApiOperation("Lista produtos de um restaurante")
-	List<ProdutoModel> listar(@ApiParam (value="Id de um Restaurante", example="1", required=true)Long restauranteId,
-			@ApiParam(value="Boolean para incluir inativos", example="true") boolean incluirInativos);
+	CollectionModel<ProdutoModel> listar(@ApiParam (value="Id de um Restaurante", example="1", required=true)Long restauranteId,
+			@ApiParam(value="Boolean para incluir inativos", example="true") Boolean incluirInativos);
 
 	
 	

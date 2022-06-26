@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -52,7 +53,7 @@ public class FormaPagamentoController implements FormasPagamentoControlerOpenApi
 	private FormaPagamentoDisassembler formaPagamentoInputDisassembler;
 
 	@GetMapping
-	public ResponseEntity<List<FormaPagamentoModel>> listar() {// ServletWebRequest request) {
+	public ResponseEntity<CollectionModel<FormaPagamentoModel>> listar() {// ServletWebRequest request) {
 		// Vamos validar se o e-Tag da requisição coincide ou não
 		// Faremos uma consulta no banco de dados pedindo a última (max) data de
 		// modificação das formas de pagamento
@@ -80,8 +81,8 @@ public class FormaPagamentoController implements FormasPagamentoControlerOpenApi
 
 		List<FormaPagamento> todasFormasPagamentos = formaPagamentoRepository.findAll();
 
-		List<FormaPagamentoModel> formasPagamentoModel = formaPagamentoModelAssembler
-				.toCollectModel(todasFormasPagamentos);
+		CollectionModel<FormaPagamentoModel> formasPagamentoModel = formaPagamentoModelAssembler
+				.toCollectionModel(todasFormasPagamentos);
 
 		return ResponseEntity.ok()
 				/*

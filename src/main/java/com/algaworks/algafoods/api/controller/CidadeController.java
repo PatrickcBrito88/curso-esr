@@ -1,18 +1,14 @@
 package com.algaworks.algafoods.api.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,25 +18,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafoods.api.ResourceUriHelper;
 import com.algaworks.algafoods.api.assembler.CidadeModelAssembler;
 import com.algaworks.algafoods.api.assembler.CidadeModelDisassembler;
-import com.algaworks.algafoods.api.exceptionhandler.Problem;
 import com.algaworks.algafoods.api.model.CidadeModel;
 import com.algaworks.algafoods.api.model.input.CidadeInput;
 import com.algaworks.algafoods.api.openapi.controller.CidadeControlerOpenApi;
-import com.algaworks.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafoods.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.algafoods.domain.exception.NegocioException;
 import com.algaworks.algafoods.domain.model.Cidade;
 import com.algaworks.algafoods.domain.repository.CidadeRepository;
 import com.algaworks.algafoods.domain.service.CadastroCidadeService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 
 
 @RestController
@@ -59,16 +47,37 @@ public class CidadeController implements CidadeControlerOpenApi {
 	@Autowired
 	private CidadeModelDisassembler cidadeModelDisassembler;
 	
-	@ApiOperation("Lista cidades")
+	
+	
+	
 	@GetMapping
-	public List<CidadeModel> listar() {
-		 return cidadeModelAssembler.toCollectModel(cidadeRepository.findAll());
+	public CollectionModel<CidadeModel> listar() {
+		/*Tivemos que colocar uma CollectionModel no retorno porque List não tem 
+		*representationModel, por isso mudamos para CollectionModel pq CollectionModel
+		* tem RepresentationModel
+		* 
+		* Assim sendo, CollectionsModel também tem os métodos de inclusão de link
+		*/
+		
+		List<Cidade> todasCidades = cidadeRepository.findAll();
+		
+		return cidadeModelAssembler.toCollectionModel(todasCidades);
 	}
 
 	
 	@GetMapping("/{cidadeId}")
-	public CidadeModel buscar(Long id) {
-		return cidadeModelAssembler.toModel(cadastroCidade.buscarOuFalhar(id));
+	public CidadeModel buscar(@PathVariable("cidadeId") Long id) {
+		
+		CidadeModel cidadeModel = cidadeModelAssembler
+				.toModel(cadastroCidade.buscarOuFalhar(id));
+		
+//		cidadeModel.add(WebMvcLinkBuilder.linkTo(CidadeController.class)//Builder adiciona domínio, protocolo e porta
+//				.slash(cidadeModel.getId())// slash = /id
+//				.withSelfRel());
+		
+		
+		
+		return cidadeModel;
 	}
 
 	
@@ -77,7 +86,13 @@ public class CidadeController implements CidadeControlerOpenApi {
 	public CidadeModel salvar(@RequestBody @Valid CidadeInput cidadeInput) {
 		try { 
 			Cidade cidade = cidadeModelDisassembler.toObjectModel(cidadeInput);
-			return cidadeModelAssembler.toModel(cadastroCidade.salvar(cidade));
+			CidadeModel cidadeModel= cidadeModelAssembler
+					.toModel(cadastroCidade.salvar(cidade));
+			
+			//HATEOAS
+		ResourceUriHelper.addUriResponseHealter(cidadeModel.getId());
+			
+			return cidadeModel;
 		} catch (EstadoNaoEncontradoException e) {
 			throw new NegocioException (e.getMessage(), e);
 		}
@@ -97,9 +112,7 @@ public class CidadeController implements CidadeControlerOpenApi {
 			} catch (EstadoNaoEncontradoException e) {
 				throw new NegocioException(e.getMessage(), e);
 			}
-		
 	}
-
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{cidadeId}")

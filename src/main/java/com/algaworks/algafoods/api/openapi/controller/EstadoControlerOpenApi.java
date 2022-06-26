@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ import io.swagger.annotations.ApiResponses;
 public interface EstadoControlerOpenApi {
 
 	@ApiOperation("Listar todos os estados")
-	List<EstadoModel> listar();
+	CollectionModel<EstadoModel> listar();
 
 	@ApiResponses({ //Retornar mensagens específicas para diferentes tipos de erros
 		@ApiResponse(code = 400, message = "ID do estado inválido", response = Problem.class),
