@@ -240,7 +240,7 @@ public class AlgaLinks {
 	// COZINHAS
 
 	public Link linkToCozinha(String rel) {
-		return linkTo(methodOn(CozinhaController.class)).withRel(rel);
+		return linkTo(CozinhaController.class).withRel(rel);
 	}
 
 	public Link linkToCozinha(Long id, String rel) {

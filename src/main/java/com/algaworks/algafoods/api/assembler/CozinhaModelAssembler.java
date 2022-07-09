@@ -36,19 +36,19 @@ public class CozinhaModelAssembler extends
 		CozinhaModel cozinhaModel = createModelWithId(cozinha.getId(), cozinha);
 		modelMapper.map(cozinha, cozinhaModel);
 		
-		cozinhaModel.add(algaLinks.linkToCozinha("cozinha"));
+		cozinhaModel.add(algaLinks.linkToCozinha("cozinhas"));
 		
 		return cozinhaModel;
 		
 	}
 	
-//	@Override
-//	public CollectionModel<CozinhaModel> toCollectionModel(Iterable<? extends Cozinha> entities) {
-//		// TODO Auto-generated method stub
-//		return super.toCollectionModel(entities)
-//				.add(linkTo(CozinhaController.class).withSelfRel());
-//	}
-//	
+	@Override
+	public CollectionModel<CozinhaModel> toCollectionModel(Iterable<? extends Cozinha> entities) {
+		// TODO Auto-generated method stub
+		return super.toCollectionModel(entities)
+				.add(linkTo(CozinhaController.class).withSelfRel());
+	}
+	
 //	public List<CozinhaModel> toCollectModel (List<Cozinha> cozinhas){
 //		return cozinhas.stream()
 //				.map(cozinha -> toModel (cozinha))

@@ -44,7 +44,6 @@ public class CidadeModelAssembler extends RepresentationModelAssemblerSupport<Ci
 		CidadeModel cidadeModel = createModelWithId(cidade.getId(), cidade);
 		modelMapper.map(cidade, cidadeModel);
 		
-				
 		//Link para id do Estado
 		cidadeModel.add(algaLinks.linkToEstado(cidadeModel.getEstado().getId()));
 		

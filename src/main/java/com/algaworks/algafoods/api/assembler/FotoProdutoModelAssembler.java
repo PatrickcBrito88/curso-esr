@@ -20,8 +20,6 @@ public class FotoProdutoModelAssembler extends RepresentationModelAssemblerSuppo
 	@Autowired
 	private AlgaLinks algaLinks;
 	
-	
-	
 	public FotoProdutoModelAssembler() {
 		super(RestauranteProdutoFotoController.class, FotoProdutoModel.class);
 	}
