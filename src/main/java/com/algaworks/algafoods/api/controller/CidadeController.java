@@ -46,10 +46,7 @@ public class CidadeController implements CidadeControlerOpenApi {
 	
 	@Autowired
 	private CidadeModelDisassembler cidadeModelDisassembler;
-	
-	
-	
-	
+
 	@GetMapping
 	public CollectionModel<CidadeModel> listar() {
 		/*Tivemos que colocar uma CollectionModel no retorno porque List não tem 
@@ -74,9 +71,7 @@ public class CidadeController implements CidadeControlerOpenApi {
 //		cidadeModel.add(WebMvcLinkBuilder.linkTo(CidadeController.class)//Builder adiciona domínio, protocolo e porta
 //				.slash(cidadeModel.getId())// slash = /id
 //				.withSelfRel());
-		
-		
-		
+
 		return cidadeModel;
 	}
 
